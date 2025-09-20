@@ -45,10 +45,14 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		return;
 	}
 
-	// Get current file path and line number
+	// Get current file path and line number(s)
 	const document = editor.document;
 	const filePath = document.fileName;
-	const currentLine = editor.selection.active.line + 1; // VSCode uses 0-based line numbers
+	
+	// Handle both single cursor position and selections
+	const selection = editor.selection;
+	const startLine = selection.start.line + 1; // VSCode uses 0-based line numbers
+	const endLine = selection.end.line + 1;
 
 	// Get workspace folder
 	const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
@@ -110,7 +114,7 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		const relativePath = path.relative(repoRoot, filePath).replace(/\\/g, '/');
 
 		// Generate repository URL
-		const repoUrl = `https://${baseUrl}/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${relativePath}#L${currentLine}`;
+		const repoUrl = generateRepositoryUrl(baseUrl, repoInfo, branch, relativePath, startLine, endLine);
 
 		// Copy to clipboard
 		await vscode.env.clipboard.writeText(repoUrl);
@@ -122,6 +126,26 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 
 	} catch (error) {
 		vscode.window.showErrorMessage(`Git operation failed: ${error}`);
+	}
+}
+
+export function generateRepositoryUrl(
+	baseUrl: string,
+	repoInfo: RepositoryInfo,
+	branch: string,
+	relativePath: string,
+	startLine: number,
+	endLine: number
+): string {
+	const lineReference = generateLineReference(startLine, endLine);
+	return `https://${baseUrl}/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${relativePath}${lineReference}`;
+}
+
+export function generateLineReference(startLine: number, endLine: number): string {
+	if (startLine === endLine) {
+		return `#L${startLine}`;
+	} else {
+		return `#L${startLine}-L${endLine}`;
 	}
 }
 

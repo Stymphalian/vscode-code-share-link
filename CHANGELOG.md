@@ -23,6 +23,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - `codeShareLink.showMainBranchInContextMenu`: Toggle visibility of "Generate Code Link (Main Branch)" command in context menu (default: true)
 - Independent control over each context menu command visibility
 - Enhanced configuration examples in README
+- Allow multi-line selection link generation (#L10-L30)
 
 ## [0.0.1] - 2024-09-20
 

@@ -58,10 +58,6 @@ ENV PATH=$PATH:/workspace/node_modules/.bin
 # Create VS Code extension specific directories
 RUN mkdir -p /workspace/.vscode-test
 
-# Set up a script to run tests with Xvfb (headless display server)
-RUN echo '#!/bin/bash\nxvfb-run -a "$@"' > /usr/local/bin/xvfb-run-safe \
-    && chmod +x /usr/local/bin/xvfb-run-safe
-
 # Expose port for debugging VS Code extensions
 EXPOSE 5000
 
