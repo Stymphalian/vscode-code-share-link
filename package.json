@@ -1,0 +1,93 @@
+{
+  "name": "vscode-code-share-link",
+  "displayName": "vscode-code-share-link",
+  "description": "VSCode extension for generating and sharing code links for github",
+  "version": "0.0.2",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Stymphalian/vscode-code-share-link.git"
+  },
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-code-share-link.generateLink",
+        "title": "Generate Code Link"
+      },
+      {
+        "command": "vscode-code-share-link.generateLinkMain",
+        "title": "Generate Code Link (Main Branch)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "vscode-code-share-link.generateLink",
+        "key": "ctrl+shift+alt+c",
+        "mac": "cmd+shift+alt+c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "vscode-code-share-link.generateLinkMain",
+        "key": "ctrl+shift+alt+m",
+        "mac": "cmd+shift+alt+m",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vscode-code-share-link.generateLink",
+          "group": "9_cutcopypaste",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "vscode-code-share-link.generateLinkMain",
+          "group": "9_cutcopypaste",
+          "when": "editorTextFocus"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Code Share Link",
+      "properties": {
+        "codeShareLink.baseUrl": {
+          "type": "string",
+          "default": "github.com",
+          "description": "Base URL for the git hosting service (e.g., github.com, gitlab.com, bitbucket.org)"
+        },
+        "codeShareLink.defaultBranch": {
+          "type": "string",
+          "default": "main",
+          "description": "Default branch name to use when generating main branch links"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.104.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}

@@ -1,12 +1,64 @@
-# VSCode Extension - Code Share Link
+# VSCode Code Share Link
 
-Create a VSCode Extension generates a code-link to github.
-Given a line in their source-code and the user can "Generate Link". 
-This will generate a URL link to the main/master remote repository and store it in their clipboard.
-A message pop-up should appear.
+VSCode extension for generating and sharing code links for GitHub repositories.
 
-Link example:
-https://github.com/MrKou47/code-share/blob/master/src/genLink.ts#L105
-github.com/MrKou47/code-share - This is the repo name
-blob/master/ - this is the git branch
-/src/genLink.ts#L105 - relative path to file and line number
+> **Note:** This repository was primarily created using AI assistance to demonstrate VSCode extension development capabilities.
+
+## Features
+
+This extension allows you to quickly generate code links to specific lines of code in your repository and copy them to your clipboard.
+
+### Generate Code Link
+
+- Open any file in a Git repository that has a remote hosting service
+- Place your cursor on the line you want to share
+- Use the command "Generate Code Link" or press `Ctrl+Shift+Alt+C` (`Cmd+Shift+Alt+C` on Mac)
+- Use "Generate Code Link (Main Branch)" or press `Ctrl+Shift+Alt+M` (`Cmd+Shift+Alt+M` on Mac) to always link to the main branch
+- The URL will be generated and copied to your clipboard
+- A notification will show the generated link
+
+### Example
+
+If you're on line 105 of `src/extension.ts` in the repository `github.com/Stymphalian/vscode-code-share-link` on branch `main`, the extension will generate:
+
+```
+https://github.com/Stymphalian/vscode-code-share-link/blob/main/src/extension.ts#L105
+```
+
+## Usage
+
+1. **Command Palette**: Press `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac) and type "Generate Code Link"
+2. **Keyboard Shortcuts**: 
+   - `Ctrl+Shift+Alt+C` (`Cmd+Shift+Alt+C` on Mac) - Generate link with current branch
+   - `Ctrl+Shift+Alt+M` (`Cmd+Shift+Alt+M` on Mac) - Generate link with main branch
+3. **Context Menu**: Right-click in the editor and select "Generate Code Link" or "Generate Code Link (Main Branch)"
+
+## Requirements
+
+- Your file must be in a Git repository
+- The repository must have a remote origin (GitHub, GitLab, Bitbucket, etc.)
+- Git must be installed and accessible from the command line
+
+## Extension Settings
+
+This extension contributes the following settings:
+
+* `codeShareLink.baseUrl`: Base URL for the git hosting service (default: `github.com`)
+* `codeShareLink.defaultBranch`: Default branch name to use when generating main branch links (default: `main`)
+
+## Known Issues
+
+- Requires Git command line tools to be available
+
+## Release Notes
+
+### 0.0.1
+
+Initial release of VSCode Code Share Link extension
+
+- Generate code links for specific lines of code
+- Copy links to clipboard
+- Support for both HTTPS and SSH remote URLs
+- Keyboard shortcut and context menu integration
+- Support for multiple git hosting services (GitHub, GitLab, Bitbucket, etc.)
+- Two commands: current branch and main branch linking
