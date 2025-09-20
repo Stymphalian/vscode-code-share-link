@@ -18,18 +18,26 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('vscode-code-share-link.generateLink', async () => {
+	const disposable1 = vscode.commands.registerCommand('vscode-code-share-link.generateLink', async () => {
 		try {
-			await generateGitHubLink();
+			await generateCodeLink(false);
 		} catch (error) {
-			vscode.window.showErrorMessage(`Failed to generate GitHub link: ${error}`);
+			vscode.window.showErrorMessage(`Failed to generate code link: ${error}`);
 		}
 	});
 
-	context.subscriptions.push(disposable);
+	const disposable2 = vscode.commands.registerCommand('vscode-code-share-link.generateLinkMain', async () => {
+		try {
+			await generateCodeLink(true);
+		} catch (error) {
+			vscode.window.showErrorMessage(`Failed to generate code link: ${error}`);
+		}
+	});
+
+	context.subscriptions.push(disposable1, disposable2);
 }
 
-async function generateGitHubLink(): Promise<void> {
+async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 	// Get the active editor
 	const editor = vscode.window.activeTextEditor;
 	if (!editor) {
@@ -49,6 +57,11 @@ async function generateGitHubLink(): Promise<void> {
 		return;
 	}
 
+	// Get configuration settings
+	const config = vscode.workspace.getConfiguration('codeShareLink');
+	const baseUrl = config.get<string>('baseUrl', 'github.com');
+	const defaultBranch = config.get<string>('defaultBranch', 'main');
+
 	try {
 		// Get git repository root
 		const { stdout: gitRoot } = await execAsync('git rev-parse --show-toplevel', { 
@@ -56,75 +69,84 @@ async function generateGitHubLink(): Promise<void> {
 		});
 		const repoRoot = gitRoot.trim();
 
-		// Get GitHub remote URL
+		// Get remote URL
 		const { stdout: remoteUrl } = await execAsync('git remote get-url origin', { 
 			cwd: repoRoot 
 		});
 		const cleanRemoteUrl = remoteUrl.trim();
 
-		// Parse GitHub URL
-		const githubInfo = parseGitHubUrl(cleanRemoteUrl);
-		if (!githubInfo) {
-			vscode.window.showErrorMessage('Not a GitHub repository');
+		// Parse repository URL
+		const repoInfo = parseRepositoryUrl(cleanRemoteUrl, baseUrl);
+		if (!repoInfo) {
+			vscode.window.showErrorMessage(`Not a ${baseUrl} repository`);
 			return;
 		}
 
-		// Get current branch
+		// Determine branch to use
 		let branch: string;
-		try {
-			const { stdout: currentBranch } = await execAsync('git branch --show-current', { 
-				cwd: repoRoot 
-			});
-			branch = currentBranch.trim();
-		} catch {
-			// Fallback for older git versions or detached HEAD
+		if (useMainBranch) {
+			branch = defaultBranch;
+		} else {
+			// Get current branch
 			try {
-				const { stdout: symbolicRef } = await execAsync('git symbolic-ref --short HEAD', { 
+				const { stdout: currentBranch } = await execAsync('git branch --show-current', { 
 					cwd: repoRoot 
 				});
-				branch = symbolicRef.trim();
+				branch = currentBranch.trim();
 			} catch {
-				branch = 'main'; // Default fallback
+				// Fallback for older git versions or detached HEAD
+				try {
+					const { stdout: symbolicRef } = await execAsync('git symbolic-ref --short HEAD', { 
+						cwd: repoRoot 
+					});
+					branch = symbolicRef.trim();
+				} catch {
+					branch = defaultBranch; // Default fallback
+				}
 			}
 		}
 
 		// Get relative path from repo root
 		const relativePath = path.relative(repoRoot, filePath).replace(/\\/g, '/');
 
-		// Generate GitHub URL
-		const githubUrl = `https://github.com/${githubInfo.owner}/${githubInfo.repo}/blob/${branch}/${relativePath}#L${currentLine}`;
+		// Generate repository URL
+		const repoUrl = `https://${baseUrl}/${repoInfo.owner}/${repoInfo.repo}/blob/${branch}/${relativePath}#L${currentLine}`;
 
 		// Copy to clipboard
-		await vscode.env.clipboard.writeText(githubUrl);
+		await vscode.env.clipboard.writeText(repoUrl);
 
 		// Show success message
-		vscode.window.showInformationMessage(`GitHub link copied to clipboard: ${githubUrl}`);
+		const branchNote = useMainBranch ? ` (${defaultBranch} branch)` : '';
+		vscode.window.showInformationMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`);
 
 	} catch (error) {
 		vscode.window.showErrorMessage(`Git operation failed: ${error}`);
 	}
 }
 
-interface GitHubInfo {
+interface RepositoryInfo {
 	owner: string;
 	repo: string;
 }
 
-function parseGitHubUrl(url: string): GitHubInfo | null {
-	// Handle both HTTPS and SSH URLs
-	// HTTPS: https://github.com/owner/repo.git
-	// SSH: git@github.com:owner/repo.git
+function parseRepositoryUrl(url: string, baseUrl: string): RepositoryInfo | null {
+	// Handle both HTTPS and SSH URLs for different services
+	// HTTPS: https://github.com/owner/repo.git, https://gitlab.com/owner/repo.git
+	// SSH: git@github.com:owner/repo.git, git@gitlab.com:owner/repo.git
 	
 	let match;
 	
+	// Escape dots in baseUrl for regex
+	const escapedBaseUrl = baseUrl.replace(/\./g, '\\.');
+	
 	// Try HTTPS format
-	match = url.match(/https:\/\/github\.com\/([^\/]+)\/([^\/]+?)(?:\.git)?$/);
+	match = url.match(new RegExp(`https://${escapedBaseUrl}/([^/]+)/([^/]+?)(?:\\.git)?$`));
 	if (match) {
 		return { owner: match[1], repo: match[2] };
 	}
 	
 	// Try SSH format
-	match = url.match(/git@github\.com:([^\/]+)\/([^\/]+?)(?:\.git)?$/);
+	match = url.match(new RegExp(`git@${escapedBaseUrl}:([^/]+)/([^/]+?)(?:\\.git)?$`));
 	if (match) {
 		return { owner: match[1], repo: match[2] };
 	}
