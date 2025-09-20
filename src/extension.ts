@@ -87,28 +87,9 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		}
 
 		// Determine branch to use
-		let branch: string;
-		if (useMainBranch) {
-			branch = defaultBranch;
-		} else {
-			// Get current branch
-			try {
-				const { stdout: currentBranch } = await execAsync('git branch --show-current', { 
-					cwd: repoRoot 
-				});
-				branch = currentBranch.trim();
-			} catch {
-				// Fallback for older git versions or detached HEAD
-				try {
-					const { stdout: symbolicRef } = await execAsync('git symbolic-ref --short HEAD', { 
-						cwd: repoRoot 
-					});
-					branch = symbolicRef.trim();
-				} catch {
-					branch = defaultBranch; // Default fallback
-				}
-			}
-		}
+		const branch = useMainBranch 
+			? defaultBranch 
+			: await getCurrentBranch(repoRoot, defaultBranch);
 
 		// Get relative path from repo root
 		const relativePath = path.relative(repoRoot, filePath).replace(/\\/g, '/');
@@ -120,12 +101,71 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		await vscode.env.clipboard.writeText(repoUrl);
 
 		// Show success message that auto-disappears after 3 seconds
-		const branchNote = useMainBranch ? ` (${defaultBranch} branch)` : '';
+		// const branchNote = useMainBranch ? ` (${defaultBranch} branch)` : '';
 		// vscode.window.showInformationMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, { modal: false });
-		vscode.window.setStatusBarMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, 3000);
+		// vscode.window.setStatusBarMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, 3000);
+		vscode.window.showInformationMessage(`Code link copied to clipboard: ${repoUrl}`);
 
 	} catch (error) {
 		vscode.window.showErrorMessage(`Git operation failed: ${error}`);
+	}
+}
+
+/**
+ * Gets the current branch name or commit SHA in detached HEAD state
+ * @param repoRoot The root directory of the git repository
+ * @param defaultBranch The default branch to fall back to
+ * @returns The current branch name or commit SHA
+ */
+async function getCurrentBranch(repoRoot: string, defaultBranch: string): Promise<string> {
+	// Try to get current branch name
+	try {
+		const { stdout: currentBranch } = await execAsync('git branch --show-current', { 
+			cwd: repoRoot 
+		});
+		const branch = currentBranch.trim();
+		
+		// Handle detached HEAD state (empty branch name)
+		if (!branch) {
+			return await getCurrentCommitSha(repoRoot, defaultBranch);
+		}
+		
+		return branch;
+	} catch {
+		// Fallback for older git versions or detached HEAD
+		try {
+			const { stdout: symbolicRef } = await execAsync('git symbolic-ref --short HEAD', { 
+				cwd: repoRoot 
+			});
+			const branch = symbolicRef.trim();
+			
+			// Handle case where symbolic-ref succeeds but returns empty
+			if (!branch) {
+				return await getCurrentCommitSha(repoRoot, defaultBranch);
+			}
+			
+			return branch;
+		} catch {
+			// Try to get current commit SHA as last resort
+			return await getCurrentCommitSha(repoRoot, defaultBranch);
+		}
+	}
+}
+
+/**
+ * Gets the current commit SHA (short form) as a fallback for detached HEAD state
+ * @param repoRoot The root directory of the git repository
+ * @param defaultBranch The default branch to fall back to if all else fails
+ * @returns The commit SHA or default branch
+ */
+async function getCurrentCommitSha(repoRoot: string, defaultBranch: string): Promise<string> {
+	try {
+		const { stdout: currentCommit } = await execAsync('git rev-parse HEAD', { 
+			cwd: repoRoot 
+		});
+		return currentCommit.trim();
+	} catch {
+		return defaultBranch; // Final fallback
 	}
 }
 
