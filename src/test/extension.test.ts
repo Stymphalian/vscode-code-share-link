@@ -4,22 +4,23 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 
-// Create a simple test version of parseGitHubUrl function for testing
-function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
-	// Handle both HTTPS and SSH URLs
-	// HTTPS: https://github.com/owner/repo.git
-	// SSH: git@github.com:owner/repo.git
+// Create a simple test version of parseRepositoryUrl function for testing
+function parseRepositoryUrl(url: string, baseUrl: string): { owner: string; repo: string } | null {
+	// Handle both HTTPS and SSH URLs for different services
 	
 	let match;
 	
+	// Escape dots in baseUrl for regex
+	const escapedBaseUrl = baseUrl.replace(/\./g, '\\.');
+	
 	// Try HTTPS format
-	match = url.match(/https:\/\/github\.com\/([^\/]+)\/([^\/]+?)(?:\.git)?$/);
+	match = url.match(new RegExp(`https://${escapedBaseUrl}/([^/]+)/([^/]+?)(?:\\.git)?$`));
 	if (match) {
 		return { owner: match[1], repo: match[2] };
 	}
 	
 	// Try SSH format
-	match = url.match(/git@github\.com:([^\/]+)\/([^\/]+?)(?:\.git)?$/);
+	match = url.match(new RegExp(`git@${escapedBaseUrl}:([^/]+)/([^/]+?)(?:\\.git)?$`));
 	if (match) {
 		return { owner: match[1], repo: match[2] };
 	}
@@ -30,37 +31,49 @@ function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
 
-	test('parseGitHubUrl - HTTPS format with .git', () => {
-		const result = parseGitHubUrl('https://github.com/MrKou47/code-share.git');
+	test('parseRepositoryUrl - GitHub HTTPS format with .git', () => {
+		const result = parseRepositoryUrl('https://github.com/MrKou47/code-share.git', 'github.com');
 		assert.strictEqual(result?.owner, 'MrKou47');
 		assert.strictEqual(result?.repo, 'code-share');
 	});
 
-	test('parseGitHubUrl - HTTPS format without .git', () => {
-		const result = parseGitHubUrl('https://github.com/Stymphalian/vscode-code-share-link');
+	test('parseRepositoryUrl - GitHub HTTPS format without .git', () => {
+		const result = parseRepositoryUrl('https://github.com/Stymphalian/vscode-code-share-link', 'github.com');
 		assert.strictEqual(result?.owner, 'Stymphalian');
 		assert.strictEqual(result?.repo, 'vscode-code-share-link');
 	});
 
-	test('parseGitHubUrl - SSH format with .git', () => {
-		const result = parseGitHubUrl('git@github.com:MrKou47/code-share.git');
+	test('parseRepositoryUrl - GitHub SSH format with .git', () => {
+		const result = parseRepositoryUrl('git@github.com:MrKou47/code-share.git', 'github.com');
 		assert.strictEqual(result?.owner, 'MrKou47');
 		assert.strictEqual(result?.repo, 'code-share');
 	});
 
-	test('parseGitHubUrl - SSH format without .git', () => {
-		const result = parseGitHubUrl('git@github.com:Stymphalian/vscode-code-share-link');
+	test('parseRepositoryUrl - GitHub SSH format without .git', () => {
+		const result = parseRepositoryUrl('git@github.com:Stymphalian/vscode-code-share-link', 'github.com');
 		assert.strictEqual(result?.owner, 'Stymphalian');
 		assert.strictEqual(result?.repo, 'vscode-code-share-link');
 	});
 
-	test('parseGitHubUrl - invalid URL', () => {
-		const result = parseGitHubUrl('https://gitlab.com/user/repo.git');
+	test('parseRepositoryUrl - GitLab HTTPS format', () => {
+		const result = parseRepositoryUrl('https://gitlab.com/user/project.git', 'gitlab.com');
+		assert.strictEqual(result?.owner, 'user');
+		assert.strictEqual(result?.repo, 'project');
+	});
+
+	test('parseRepositoryUrl - GitLab SSH format', () => {
+		const result = parseRepositoryUrl('git@gitlab.com:user/project.git', 'gitlab.com');
+		assert.strictEqual(result?.owner, 'user');
+		assert.strictEqual(result?.repo, 'project');
+	});
+
+	test('parseRepositoryUrl - wrong baseUrl', () => {
+		const result = parseRepositoryUrl('https://github.com/user/repo.git', 'gitlab.com');
 		assert.strictEqual(result, null);
 	});
 
-	test('parseGitHubUrl - invalid format', () => {
-		const result = parseGitHubUrl('not-a-url');
+	test('parseRepositoryUrl - invalid format', () => {
+		const result = parseRepositoryUrl('not-a-url', 'github.com');
 		assert.strictEqual(result, null);
 	});
 });
