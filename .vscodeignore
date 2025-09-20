@@ -14,3 +14,5 @@ Dockerfile.dev
 docker-compose.yaml
 DOCKER_DEV_README.md
 Agents.md
+.ai/
+LOCAL_INSTALL_INSTRUCTIONS.md
