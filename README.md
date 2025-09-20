@@ -1,71 +1,57 @@
-# vscode-code-share-link README
+# VSCode Code Share Link
 
-This is the README for your extension "vscode-code-share-link". After writing up a brief description, we recommend including the following sections.
+VSCode extension for generating and sharing code links for GitHub repositories.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This extension allows you to quickly generate GitHub links to specific lines of code in your repository and copy them to your clipboard.
 
-For example if there is an image subfolder under your extension project workspace:
+### Generate GitHub Link
 
-\!\[feature X\]\(images/feature-x.png\)
+- Open any file in a Git repository that has a GitHub remote
+- Place your cursor on the line you want to share
+- Use the command "Generate GitHub Link" or press `Ctrl+Shift+C` (Cmd+Shift+C on Mac)
+- The GitHub URL will be generated and copied to your clipboard
+- A notification will show the generated link
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Example
+
+If you're on line 105 of `src/extension.ts` in the repository `github.com/Stymphalian/vscode-code-share-link` on branch `main`, the extension will generate:
+
+```
+https://github.com/Stymphalian/vscode-code-share-link/blob/main/src/extension.ts#L105
+```
+
+## Usage
+
+1. **Command Palette**: Press `Ctrl+Shift+P` (Cmd+Shift+P on Mac) and type "Generate GitHub Link"
+2. **Keyboard Shortcut**: Press `Ctrl+Shift+C` (Cmd+Shift+C on Mac) while in the editor
+3. **Context Menu**: Right-click in the editor and select "Generate GitHub Link"
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Your file must be in a Git repository
+- The repository must have a GitHub remote origin
+- Git must be installed and accessible from the command line
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* No additional settings required
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Currently only supports GitHub repositories (not GitLab, Bitbucket, etc.)
+- Requires Git command line tools to be available
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release of VSCode Code Share Link extension
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- Generate GitHub links for specific lines of code
+- Copy links to clipboard
+- Support for both HTTPS and SSH remote URLs
+- Keyboard shortcut and context menu integration
