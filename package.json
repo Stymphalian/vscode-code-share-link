@@ -9,15 +9,36 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Stymphalian/vscode-code-share-link.git"
+  },
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-code-share-link.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-code-share-link.generateLink",
+        "title": "Generate GitHub Link"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "vscode-code-share-link.generateLink",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vscode-code-share-link.generateLink",
+          "group": "9_cutcopypaste",
+          "when": "editorTextFocus"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
