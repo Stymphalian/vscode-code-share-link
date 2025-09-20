@@ -125,12 +125,12 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 	}
 }
 
-interface RepositoryInfo {
+export interface RepositoryInfo {
 	owner: string;
 	repo: string;
 }
 
-function parseRepositoryUrl(url: string, baseUrl: string): RepositoryInfo | null {
+export function parseRepositoryUrl(url: string, baseUrl: string): RepositoryInfo | null {
 	// Handle both HTTPS and SSH URLs for different services
 	// HTTPS: https://github.com/owner/repo.git, https://gitlab.com/owner/repo.git
 	// SSH: git@github.com:owner/repo.git, git@gitlab.com:owner/repo.git
