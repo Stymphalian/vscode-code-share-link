@@ -1,0 +1,91 @@
+services:
+  # VS Code extension development service
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ${PROJECT_NAME:-vscode-code-share-link}-dev
+    volumes:
+      - .:/workspace
+      # Node.js dependencies
+      - /workspace/node_modules
+      # VS Code extension test resources
+      - /workspace/.vscode-test
+      # VS Code related files
+      - ${HOME:-/root}/.vscode-server:/root/.vscode-server
+    environment:
+      - NODE_ENV=development
+      - PROJECT_NAME=${PROJECT_NAME:-vscode-code-share-link}
+      - DISPLAY=:10
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    ports:
+      - "5000:5000"   # VS Code extension debugging port
+    command: /bin/bash
+
+  # Shell service for running commands
+  shell:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ${PROJECT_NAME:-vscode-code-share-link}-shell
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
+      - /workspace/.vscode-test
+      - ${HOME:-/root}/.vscode-server:/root/.vscode-server
+    environment:
+      - NODE_ENV=development
+      - PROJECT_NAME=${PROJECT_NAME:-vscode-code-share-link}
+      - DISPLAY=:10
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    profiles:
+      - shell  # Only start when explicitly requested
+
+  # # Python development service
+  # python:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   container_name: ${PROJECT_NAME:-ai-starter-project}-python
+  #   volumes:
+  #     - .:/workspace
+  #     - /workspace/.venv
+  #     - /workspace/venv
+  #     - /workspace/__pycache__
+  #   environment:
+  #     - PROJECT_NAME=${PROJECT_NAME:-ai-starter-project}
+  #     - PYTHONPATH=/workspace
+  #   working_dir: /workspace
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - "8000:8000"
+  #   command: /bin/bash
+  #   profiles:
+  #     - python
+
+  # # Go development service
+  # go:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   container_name: ${PROJECT_NAME:-ai-starter-project}-go
+  #   volumes:
+  #     - .:/workspace
+  #     - /workspace/go/pkg
+  #   environment:
+  #     - PROJECT_NAME=${PROJECT_NAME:-ai-starter-project}
+  #     - GOPATH=/workspace/go
+  #   working_dir: /workspace
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - "8080:8080"
+  #   command: /bin/bash
+  #   profiles:
+  #     - go

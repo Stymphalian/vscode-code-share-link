@@ -1,5 +1,3 @@
-# VSCode Extension - Code Share Link
-
 Create a VSCode Extension generates a code-link to github.
 Given a line in their source-code and the user can "Generate Link". 
 This will generate a URL link to the main/master remote repository and store it in their clipboard.

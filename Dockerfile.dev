@@ -1,0 +1,63 @@
+# VS Code Extension Development Dockerfile
+FROM ubuntu:24.04
+
+# Set working directory
+WORKDIR /workspace
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_ENV=development
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    # Basic tools
+    git \
+    curl \
+    wget \
+    # Node.js (required for VS Code extension development)
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    # Basic build essentials for native modules
+    build-essential \
+    # For debugging and extension testing
+    xvfb \
+    libxkbfile-dev \
+    libsecret-1-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js packages required for VS Code extension development
+RUN npm install -g npm@latest \
+    typescript \
+    @types/node \
+    yo \
+    generator-code \
+    vsce \
+    @vscode/vsce
+
+# Set up VS Code Extension development environment
+ENV PATH=$PATH:/workspace/node_modules/.bin
+
+# Create VS Code extension specific directories
+RUN mkdir -p /workspace/.vscode-test
+
+# Set up a script to run tests with Xvfb (headless display server)
+RUN echo '#!/bin/bash\nxvfb-run -a "$@"' > /usr/local/bin/xvfb-run-safe \
+    && chmod +x /usr/local/bin/xvfb-run-safe
+
+# Expose port for debugging VS Code extensions
+EXPOSE 5000
+
+## CONFIGURE FOR YOUR SPECIFIC PROJECT
+# # Copy package files first for better caching
+# COPY project_name/package.json ./project_name/
+# COPY project_name/package-lock.json ./project_name/
+# # Install dependencies (skip prepare script to avoid running tests during build)
+# WORKDIR /workspace/graph_editor
+# RUN npm ci --ignore-scripts
+
+# Expose common development ports
+EXPOSE 3000 5173 8000 8080 9000
+
+# Default command (can be overridden in docker-compose)
+CMD ["/bin/bash"]
