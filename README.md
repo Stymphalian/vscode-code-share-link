@@ -45,20 +45,27 @@ This extension contributes the following settings:
 
 * `codeShareLink.baseUrl`: Base URL for the git hosting service (default: `github.com`)
 * `codeShareLink.defaultBranch`: Default branch name to use when generating main branch links (default: `main`)
+* `codeShareLink.showInContextMenu`: Show 'Generate Code Link' command in the editor context menu (default: `true`)
+* `codeShareLink.showMainBranchInContextMenu`: Show 'Generate Code Link (Main Branch)' command in the editor context menu (default: `true`)
+
+### Configuration Examples
+
+```json
+{
+  // Use GitLab instead of GitHub
+  "codeShareLink.baseUrl": "gitlab.com",
+  
+  // Use 'master' as the default branch
+  "codeShareLink.defaultBranch": "master",
+  
+  // Hide the regular command from context menu
+  "codeShareLink.showInContextMenu": false,
+  
+  // Keep only the main branch command in context menu
+  "codeShareLink.showMainBranchInContextMenu": true
+}
+```
 
 ## Known Issues
 
 - Requires Git command line tools to be available
-
-## Release Notes
-
-### 0.0.1
-
-Initial release of VSCode Code Share Link extension
-
-- Generate code links for specific lines of code
-- Copy links to clipboard
-- Support for both HTTPS and SSH remote URLs
-- Keyboard shortcut and context menu integration
-- Support for multiple git hosting services (GitHub, GitLab, Bitbucket, etc.)
-- Two commands: current branch and main branch linking

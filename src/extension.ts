@@ -115,9 +115,10 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		// Copy to clipboard
 		await vscode.env.clipboard.writeText(repoUrl);
 
-		// Show success message
+		// Show success message that auto-disappears after 3 seconds
 		const branchNote = useMainBranch ? ` (${defaultBranch} branch)` : '';
-		vscode.window.showInformationMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`);
+		// vscode.window.showInformationMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, { modal: false });
+		vscode.window.setStatusBarMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, 3000);
 
 	} catch (error) {
 		vscode.window.showErrorMessage(`Git operation failed: ${error}`);

@@ -18,6 +18,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - `codeShareLink.defaultBranch`: Configure default branch name (default: main)
 - Support for flexible URL generation based on configuration
 - AI development note in README
+- Context menu visibility settings:
+  - `codeShareLink.showInContextMenu`: Toggle visibility of "Generate Code Link" command in context menu (default: true)
+  - `codeShareLink.showMainBranchInContextMenu`: Toggle visibility of "Generate Code Link (Main Branch)" command in context menu (default: true)
+- Independent control over each context menu command visibility
+- Enhanced configuration examples in README
 
 ## [0.0.1] - 2024-09-20
 

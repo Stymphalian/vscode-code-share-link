@@ -19,11 +19,11 @@
     "commands": [
       {
         "command": "vscode-code-share-link.generateLink",
-        "title": "Generate Code Link"
+        "title": "Copy Code Link"
       },
       {
         "command": "vscode-code-share-link.generateLinkMain",
-        "title": "Generate Code Link (Main Branch)"
+        "title": "Copy Code Link (Main)"
       }
     ],
     "keybindings": [
@@ -44,13 +44,13 @@
       "editor/context": [
         {
           "command": "vscode-code-share-link.generateLink",
-          "group": "9_cutcopypaste",
-          "when": "editorTextFocus"
+          "group": "6_copypath",
+          "when": "editorTextFocus && config.codeShareLink.showInContextMenu"
         },
         {
           "command": "vscode-code-share-link.generateLinkMain",
-          "group": "9_cutcopypaste",
-          "when": "editorTextFocus"
+          "group": "6_copypath",
+          "when": "editorTextFocus && config.codeShareLink.showMainBranchInContextMenu"
         }
       ]
     },
@@ -67,6 +67,16 @@
           "type": "string",
           "default": "main",
           "description": "Default branch name to use when generating main branch links"
+        },
+        "codeShareLink.showInContextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show 'Copy Code Link' command in the editor context menu"
+        },
+        "codeShareLink.showMainBranchInContextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show 'Copy Code Link (Main)' command in the editor context menu"
         }
       }
     }
@@ -77,7 +87,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "xvfb-run -a vscode-test",
+    "test:headless": "xvfb-run -a vscode-test"
   },
   "devDependencies": {
     "@types/vscode": "^1.104.0",

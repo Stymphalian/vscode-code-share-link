@@ -23,6 +23,23 @@ RUN apt-get update && apt-get install -y \
     xvfb \
     libxkbfile-dev \
     libsecret-1-dev \
+    # VS Code runtime dependencies
+    libnspr4 \
+    libnss3 \
+    libxss1 \
+    libxrandr2 \
+    libasound2t64 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0t64 \
+    libgtk-3-0t64 \
+    libgdk-pixbuf2.0-0 \
+    libdrm2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxcursor1 \
+    libxi6 \
+    libxtst6 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -50,14 +67,9 @@ EXPOSE 5000
 
 ## CONFIGURE FOR YOUR SPECIFIC PROJECT
 # # Copy package files first for better caching
-# COPY project_name/package.json ./project_name/
-# COPY project_name/package-lock.json ./project_name/
-# # Install dependencies (skip prepare script to avoid running tests during build)
-# WORKDIR /workspace/graph_editor
-# RUN npm ci --ignore-scripts
-
-# Expose common development ports
-EXPOSE 3000 5173 8000 8080 9000
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
 
 # Default command (can be overridden in docker-compose)
 CMD ["/bin/bash"]
