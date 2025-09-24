@@ -4,6 +4,11 @@ All notable changes to the "vscode-code-share-link" extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.3] - 2025-09-24
+
+### Added
+- New command "Copy Code Link (Hash)" for generating permalink URLs using commit hash instead of branch name
+
 ## [0.0.2] - 2024-09-20
 
 ### Changed

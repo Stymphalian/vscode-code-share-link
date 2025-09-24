@@ -6,14 +6,15 @@ VSCode extension for generating and sharing code links for GitHub repositories.
 
 ## Features
 
-This extension allows you to quickly generate code links to specific lines of code in your repository and copy them to your clipboard.
+This extension allows you to quickly Copy Code Links to specific lines of code in your repository and copy them to your clipboard.
 
-### Generate Code Link
+### Copy Code Link
 
 - Open any file in a Git repository that has a remote hosting service
 - Place your cursor on the line you want to share
-- Use the command "Generate Code Link" or press `Ctrl+Shift+Alt+C` (`Cmd+Shift+Alt+C` on Mac)
-- Use "Generate Code Link (Main Branch)" or press `Ctrl+Shift+Alt+M` (`Cmd+Shift+Alt+M` on Mac) to always link to the main branch
+- Use the command "Copy Code Link" or press `Ctrl+Shift+Alt+C` (`Cmd+Shift+Alt+C` on Mac)
+- Use "Copy Code Link (Main)" or press `Ctrl+Shift+Alt+M` (`Cmd+Shift+Alt+M` on Mac) to always link to the main branch
+- Use "Copy Code Link (Hash)" to create a permalink using the current commit hash
 - The URL will be generated and copied to your clipboard
 - A notification will show the generated link
 
@@ -21,17 +22,24 @@ This extension allows you to quickly generate code links to specific lines of co
 
 If you're on line 105 of `src/extension.ts` in the repository `github.com/Stymphalian/vscode-code-share-link` on branch `main`, the extension will generate:
 
+**Current branch link:**
 ```
 https://github.com/Stymphalian/vscode-code-share-link/blob/main/src/extension.ts#L105
 ```
 
+**Hash-based permalink:**
+```
+https://github.com/Stymphalian/vscode-code-share-link/blob/abc123def456/src/extension.ts#L105
+```
+
 ## Usage
 
-1. **Command Palette**: Press `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac) and type "Generate Code Link"
+1. **Command Palette**: Press `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac) and type "Copy Code Link"
 2. **Keyboard Shortcuts**: 
-   - `Ctrl+Shift+Alt+C` (`Cmd+Shift+Alt+C` on Mac) - Generate link with current branch
-   - `Ctrl+Shift+Alt+M` (`Cmd+Shift+Alt+M` on Mac) - Generate link with main branch
-3. **Context Menu**: Right-click in the editor and select "Generate Code Link" or "Generate Code Link (Main Branch)"
+   - `Ctrl+Shift+Alt+C` (`Cmd+Shift+Alt+C` on Mac) - Copy link with current branch
+   - `Ctrl+Shift+Alt+M` (`Cmd+Shift+Alt+M` on Mac) - Copy link with main branch
+3. **Context Menu**: Right-click in the editor and select "Copy Code Link" or "Copy Code Link (Main)"
+4. **Hash-based Permalinks**: Use "Copy Code Link (Hash)" from the Command Palette to generate links using commit hash (no keyboard shortcut or context menu)
 
 ## Requirements
 
@@ -45,8 +53,8 @@ This extension contributes the following settings:
 
 * `codeShareLink.baseUrl`: Base URL for the git hosting service (default: `github.com`)
 * `codeShareLink.defaultBranch`: Default branch name to use when generating main branch links (default: `main`)
-* `codeShareLink.showInContextMenu`: Show 'Generate Code Link' command in the editor context menu (default: `true`)
-* `codeShareLink.showMainBranchInContextMenu`: Show 'Generate Code Link (Main Branch)' command in the editor context menu (default: `true`)
+* `codeShareLink.showInContextMenu`: Show 'Copy Code Link' command in the editor context menu (default: `true`)
+* `codeShareLink.showMainBranchInContextMenu`: Show 'Copy Code Link (Main)' command in the editor context menu (default: `true`)
 
 ### Configuration Examples
 

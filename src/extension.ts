@@ -34,10 +34,18 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	context.subscriptions.push(disposable1, disposable2);
+	const disposable3 = vscode.commands.registerCommand('vscode-code-share-link.generateLinkHash', async () => {
+		try {
+			await generateCodeLink(false, true); // useMainBranch = false, useCommitHash = true
+		} catch (error) {
+			vscode.window.showErrorMessage(`Failed to generate code link: ${error}`);
+		}
+	});
+
+	context.subscriptions.push(disposable1, disposable2, disposable3);
 }
 
-async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
+async function generateCodeLink(useMainBranch: boolean = false, useCommitHash: boolean = false): Promise<void> {
 	// Get the active editor
 	const editor = vscode.window.activeTextEditor;
 	if (!editor) {
@@ -87,9 +95,16 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		}
 
 		// Determine branch to use
-		const branch = useMainBranch 
-			? defaultBranch 
-			: await getCurrentBranch(repoRoot, defaultBranch);
+		let branch: string;
+		if (useCommitHash) {
+			// Use current commit hash for permalink
+			branch = await getCurrentCommitSha(repoRoot, defaultBranch);
+		} else {
+			// Use branch name (either current or main)
+			branch = useMainBranch 
+				? defaultBranch 
+				: await getCurrentBranch(repoRoot, defaultBranch);
+		}
 
 		// Get relative path from repo root
 		const relativePath = path.relative(repoRoot, filePath).replace(/\\/g, '/');
@@ -104,7 +119,7 @@ async function generateCodeLink(useMainBranch: boolean = false): Promise<void> {
 		// const branchNote = useMainBranch ? ` (${defaultBranch} branch)` : '';
 		// vscode.window.showInformationMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, { modal: false });
 		// vscode.window.setStatusBarMessage(`Code link copied to clipboard${branchNote}: ${repoUrl}`, 3000);
-		vscode.window.showInformationMessage(`Code link copied to clipboard: ${repoUrl}`);
+		vscode.window.showInformationMessage(`Code link copied to clipboard : ${repoUrl}`);
 
 	} catch (error) {
 		vscode.window.showErrorMessage(`Git operation failed: ${error}`);

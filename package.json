@@ -1,8 +1,8 @@
 {
   "name": "vscode-code-share-link",
   "displayName": "vscode-code-share-link",
-  "description": "VSCode extension for generating and sharing code links for github",
-  "version": "0.0.2",
+  "description": "VSCode extension for sharing github code links of the current file and line ",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -24,6 +24,10 @@
       {
         "command": "vscode-code-share-link.generateLinkMain",
         "title": "Copy Code Link (Main)"
+      },
+      {
+        "command": "vscode-code-share-link.generateLinkHash",
+        "title": "Copy Code Link (Hash)"
       }
     ],
     "keybindings": [
